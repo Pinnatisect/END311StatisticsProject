@@ -2,12 +2,6 @@
 
 library(moments)
 
-# First entry
-#print(avocado_data[1,])
-
-# First column
-#print(avocado_data[,1])
-
 printf <- function(...) {
 	print(sprintf(...))
 }
