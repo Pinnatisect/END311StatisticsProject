@@ -1,10 +1,6 @@
 #!/usr/bin/env Rscript
 
-# Avocado #
-
 library(moments)
-
-#head(avocado_data, 10)
 
 # First entry
 #print(avocado_data[1,])
@@ -48,6 +44,21 @@ avocado_data <- read.csv("avocado.csv")
 
 atlanta <- avocado_data[avocado_data[,"region"] == "Atlanta",]
 atlanta_total <- atlanta[,"Total.Volume"]
+
+printf("Variables :")
+printf("Date         - Interval")
+printf("AveragePrice - Interval")
+printf("Total Volume - Interval")
+printf("4046         - Interval")
+printf("4225         - Interval")
+printf("4770         - Interval")
+printf("Total Bags   - Interval")
+printf("Small Bags   - Interval")
+printf("Large Bags   - Interval")
+printf("XLarge Bags  - Interval")
+printf("type         - Nominal")
+printf("year         - Interval")
+printf("region       - Nominal")
 
 basic_descriptive(atlanta_total)
 plot(atlanta_total, atlanta[,"AveragePrice"])
