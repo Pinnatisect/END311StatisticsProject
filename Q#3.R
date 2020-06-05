@@ -1,6 +1,6 @@
 # PART3 : Hypothesis testing for standard deviation
 library(data.table)
-library(TeachingDemos)
+library(TeachingDemos) #for sigma.test function
 
 my_avocado_data <- read.csv("avocado.csv", sep = ",", header = T)
 atlanta_data <- subset(my_avocado_data, region == "Atlanta")
