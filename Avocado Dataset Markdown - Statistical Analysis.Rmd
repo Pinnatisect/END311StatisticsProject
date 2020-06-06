@@ -1,0 +1,387 @@
+---
+title: "Avocado Dataset Markdown - Statistical Analysis"
+date: "06 06 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#### 1.	Describe the Data Set statistically. What are the variables? Define the type of each variable (Nominal, ordinal, or interval). Descriptive Statistics for the total number of avocado sold in Atlanta region (Variance, Standard deviation, Range, Percentiles, Quartiles, Measure of Skew. Scatterplot, Box Plot).
+
+We define a function to calculate percentiles first.
+```{r echo = FALSE}
+library(moments)
+options(scipen = 999) ## Disabled scientific notation for a smooth graph.
+```
+
+```{r}
+printf <- function(...) {print(sprintf(...))}
+```
+
+``` {r}
+fractile <- function(data_set, n) {
+	name <- "Fractile"
+	if (n ==   3) name <- "Tertile"
+	if (n ==   4) name <- "Quartile"
+	if (n ==   5) name <- "Quintile"
+	if (n ==   6) name <- "Sextile"
+	if (n ==   7) name <- "Septile"
+	if (n ==   8) name <- "Octile"
+	if (n ==  10) name <- "Decile"
+	if (n ==  12) name <- "Duo-decile"
+	if (n ==  16) name <- "Hexadecile"
+	if (n ==  20) name <- "Ventile"
+	if (n == 100) name <- "Percentile"
+	for (i in 2:n-1) {
+		printf("%s %s = %s", name, i, quantile(data_set, i * (1/n)))
+	}
+	
+}
+```
+
+We define another function to calculate variance, standard deviation, range and skewness measures.
+``` {r}
+basic_descriptive <- function(data_set) {
+	printf("Variance = %s", var(data_set))
+	printf("Standard Deviation = %s", sd(data_set))
+	range <- range(data_set)
+	printf("Range = %s - %s", range[1], range[2])
+	fractile(data_set, 4)
+	fractile(data_set, 100)
+	printf("Skewness = %s", skewness(data_set))
+}
+```
+Now we should read our data and retrieve information about Atlanta region.
+``` {r echo = FALSE}
+avocado_data <- read.csv("avocado.csv")
+
+atlanta <- avocado_data[avocado_data[,"region"] == "Atlanta",]
+atlanta_total <- atlanta[,"Total.Volume"]
+```
+We want to define the type of each variable in our data set:
+``` {r echo= FALSE}
+printf("Variables :")
+printf("Date         - Interval")
+printf("AveragePrice - Interval")
+printf("Total Volume - Interval")
+printf("4046         - Interval")
+printf("4225         - Interval")
+printf("4770         - Interval")
+printf("Total Bags   - Interval")
+printf("Small Bags   - Interval")
+printf("Large Bags   - Interval")
+printf("XLarge Bags  - Interval")
+printf("type         - Nominal")
+printf("year         - Interval")
+printf("region       - Nominal")
+```
+Now we can call our function to calculate the measures we want:
+``` {r echo = FALSE}
+basic_descriptive(atlanta_total)
+```
+We can plot scatter and boxplot for total number of avocado sold in Atlanta region:
+``` {r echo = FALSE}
+plot(atlanta_total, atlanta[,"AveragePrice"], main = "Total Number of Avocados Sold in Atlanta", xlab= "Total sold", ylab = "Average Price", pch= 16)
+```
+```{r echo=FALSE}
+boxplot(atlanta_total, main = "Total Number of Avocados Sold in Atlanta", xlab= "Total sold", horizontal = T, ylab = "Avocado",col = "blue")
+```
+
+```{r echo= FALSE}
+library(data.table)
+```
+#### 2. Hypothesis testing for mean (Hint: You need determine test value for the total amount of avocado sold in Atlanta region.)
+#### 2.1. State the hypothesis.
+H0(Null hypothesis): mean of total amount of avocado sold (in volume) in Atlanta region is equal to 200,000 (test value)
+
+H1(Alternative hypothesis): mean of total amount of avocado sold (in volume) in Atlanta region is greater than 200,000 (test value).
+We define our test value:
+``` {r}
+test_mu <- 200000
+```
+#### 2.2 Compute the test statistic.
+``` {r}
+t.test(atlanta_total, mu = test_mu, alternative = "greater", var.equal = T, conf.level = 0.95)
+```
+Here's our t-statistic value:
+``` {r}
+t_value_for_atlanta <- (mean(atlanta_total) - test_mu)/ sqrt(var(atlanta_total)/nrow(atlanta))
+```
+
+``` {r echo =FALSE}
+print(t_value_for_atlanta) 
+```
+
+#### 2.3. Interpret the results.
+ t_value = 4.3424 with df = 337 and p-value = 0.000009 which means 200000 (conf. level = 0.95 then alpha = 0.05)
+ 
+ Reject null hypothesis in favor of alternative hypothesis.
+ 
+ Mean of total amount of avocado sold in Atlanta region is greater than 200000.
+
+#### 3.	Hypothesis testing for standard deviation (Hint: You need determine test value for the total amount of avocado sold in Atlanta region).
+``` {r echo =FALSE}
+library(TeachingDemos) #for sigma.test function
+```
+##### 3.1. State the hypothesis.
+ H0(Null hypothesis): standard deviation of total amount of avocado sold (in volume) in Atlanta region is equal to 200000(test value)
+ 
+ H1(alternative hypothesis): standard deviation of total amount of avocado sold (in volume)in Atlanta region is greater than 200000(test value)
+ 
+ We define a test value:
+```{r}
+test_sigma <- 200000
+```
+#### 3.2.Compute the test statistic.
+We can apply sigma test from Teaching Demos library:
+```{r}
+sigma.test(atlanta_total, sigma = test_sigma, sigmasq = test_sigma^2, alternative = "greater", conf.level = 0.95)
+```
+We also define a Chi-squared value:
+```{r}
+chisquare_value <- (nrow(atlanta) - 1) * (var(atlanta_total)) / ((test_sigma)^2)
+```
+
+```{r echo =FALSE}
+print(chisquare_value)
+```
+#### 3.3. Interpret the results.
+chisquare_value =583.22  with df = 337 and p-value = 0.000000000000001887 (conf. level = 0.95 then alpha = 0.05)
+
+Reject null hypothesis in favor of alternative hypothesis.
+
+Standard deviation of total amount of avocado sold in Atlanta region is greater than 200000 (it is 263107.1)
+
+#### 4.	Two sample confidence intervals for the means of total amount of avocado sold in Boston region and Atlanta region. 
+```{r echo =FALSE}
+boston <- avocado_data[avocado_data[,"region"] == "Boston",]
+boston_total <- boston[,"Total.Volume"]
+```
+
+Let us obtain the variances and means for Atlanta and Boston regions.
+``` {r echo = F}
+n_one <- length(boston_total)
+n_two <- length(atlanta_total)
+
+mean_one <- mean(boston_total)
+mean_two <- mean(atlanta_total)
+
+var_one <- var(boston_total)
+var_two <- var(atlanta_total)
+```
+
+``` {r echo= F}
+sprintf("Mean for Boston region: %s", mean_one)
+sprintf("Mean for Atlanta region: %s", mean_two)
+sprintf("Variance for Boston region: %s", var_one)
+sprintf("Variance for Boston region: %s", var_two)
+```
+We define v, t-statistic, standard error and estimate variables to calculate confidence interval.
+``` {r}
+v <- ((var_one / n_one + var_two / n_two)^2) / (((var_one / n_one)^2) / (n_one - 1) + ((var_two / n_two)^2) / (n_two - 1))
+
+t <- - qt((1 - 0.95) / 2 , df=v)
+
+std_err <- sqrt((var_one / n_one) + (var_two / n_two))
+
+estimate <- mean_one - mean_two
+```
+Now we can calculate confidence interval:
+``` {r echo = F}
+print("Confidence interval:")
+print(sprintf("%s - %s * %s < mu_boston - mu_atlanta < %s + %s * %s", estimate, t, std_err, estimate, t, std_err))
+print(sprintf("%s - %s < mu_boston - mu_atlanta < %s + %s", estimate, t * std_err, estimate, t * std_err))
+```
+#### 5. Two sample hypothesis testing for means of total amount of avocado sold in Boston region and Atlanta region.
+We will apply t-test. Assume that each groups are APPROXIMATELY NORMALLY DISTRIBUTED WITH EQUAL VARIANCES.
+
+##### 5.1. State the hypothesis.
+ 
+ H0: There is NO significant difference between total sales (in volume) for Boston and Atlanta regions.
+ 
+ H1: There is a significant difference between total sales (in volume) for Boston and Atlanta regions.
+ 
+ Notice that this test is two-tailed.
+ 
+##### 5.2. Compute the test statistic.
+``` {r}
+t.test(atlanta_total, boston_total, paired = F, alternative = "two.sided", var.equal = T, conf.level = 0.95)
+t_value_for_two_sample <- (mean_two - mean_one) / sqrt(var_two / nrow(atlanta) + var_one / nrow(boston))
+```
+Our t-value is:
+``` {r echo = F}
+print(t_value_for_two_sample)
+```
+We could also obtain this value from t.test function output.
+
+##### 5.3. Interpret the results.
+
+t_value = -1.217 with df = 674 and p = 0.224. p > 0.025 (two-tailed test, conf. level = 0.95, then alpha = 0.05)
+
+Reject null hypothesis in favor of alternative hypothesis.
+
+There is a significant difference between means for Boston and Atlanta regions.
+
+#### 6.	Regression Analysis: ‘4046’ and ‘Total bags’ in Boston region.
+
+##### 6.1. Obtain the equation of the regression line.
+``` {r}
+model <- lm(Total.Bags ~ X4046, data = atlanta )
+```
+
+``` {r echo = F}
+print(model)
+```
+Our formula should be stated as:
+
+#### Total Bags = 20554.7389 + 0.4376  (Avocados with PLU sticker 4046)
+
+##### 6.2. Graph the line on a scatter diagram.
+
+Let us first call ggplot2 library for a better visiualization.
+``` {r}
+library(ggplot2)
+```
+Now we can plot the data using the following code:
+```{r}
+ggplot(atlanta, aes(X4046, Total.Bags)) + labs(title = "Type 4046 vs. Total Bags", x= "Avocado Type 4046", y= "Total Bags") + theme(plot.title = element_text(hjust = 0.5)) + geom_point() + stat_smooth(method = lm)
+
+```
+
+##### 6.3. Interpret R-squared value
+
+We call the summary function:
+``` {r}
+summary(model)
+``` 
+ R-squared value is used to interpret how well our model fits the data.
+ 
+ R-squared takes a value between 0 and 1. Here the summary gives us two different values for R-squared: multiple and adjusted.
+
+ Multiple R-squared:  0.4503,	Adjusted R-squared:  0.4487 
+
+ We are interested in adjusted R-squared value. Multiple R-squared includes a penalty for multiple linear regression models.
+ 
+ 0.4487 value means that our model is not able to explain the variability (only partially). A value closer to 1 would be preferred. 
+
+ We can observe that from Residual standard error value as well: 74,800. RSE value is relatively high, which means that the linear model fits our data poorly. The values deviate from our regression line by 74,800 units.
+
+ Also the percentage error for RSE is calculated by 
+``` {r}
+ sigma(model) * 100 / mean(atlanta$Total.Bags)
+```
+
+##### 6.4. Hypothesis testing for the slope and intercept.
+
+H0: The coefficient is equal to zero (no correlation between Total Bags and Avocado type 4046.)
+
+H1: The coefficient is NOT equal to zero. (There is a correlation between Total Bags and Avocado type 4046.)
+
+Let us define variables to obtain our regression t-value.
+
+``` {r}
+regression <- summary(model) 
+coefficients <- regression$coefficients
+beta_estimate <-coefficients["X4046", "Estimate"]
+stderror <- coefficients["X4046", "Std. Error"]
+regression_t <- beta_estimate / stderror
+regression_p <- 2*pt(-abs(regression_t), df=nrow(atlanta)-ncol(atlanta))
+```
+
+```{r echo= F}
+print(regression_t)
+```
+
+Again, using t-value for our hypothesis: 16.59131. 
+
+It simply tells us that the coefficient cannot be equal to zero. 
+
+Checking our summary model, we can see that P-value is extremely small and falls into critical region ( <alpha = 0.05) We can reject H0.
+
+#### 7.	Analysis of Variance (Is there a difference between the mean of total amount of avocado sold: in the following regions: Atlanta, Boston and Detroit. 
+We use "car" library for Levene Test.
+```{r echo= F}
+library(car) 
+
+new_dt<- subset(avocado_data, region =="Atlanta" | region =="Boston" | region == "Detroit")
+```
+##### 7.1. Perform the diagnostic tests for the assumptions on ANOVA and test the following assumptions:
+
+##### (i) Normality of residuals,
+``` {r fig.width = 8, fig.height = 7}
+hist(new_dt$Total.Volume, main = paste("Total Number of Observations for Avocados sold in Atlanta Boston and Detroit"), xlab = "Total Sold", labels = T, col = "blue")
+```
+
+
+Let's do one-way ANOVA test:
+```{r}
+anova_one_way <- aov(Total.Volume ~ region, data = new_dt)
+qqnorm(anova_one_way$residuals)
+qqline(anova_one_way$residuals)
+```
+
+Observations are incompatible with theoretical values so there is not a normality. 
+
+##### (ii) The errors have a mean of 0, 
+
+##### (iii)The errors are independent,
+
+Independency can only be achieved if you have set your experiment up correctly.
+
+There is no way to test the independency;
+
+##### (iv) The errors have equal variance among each treatment levels.
+```{r}
+leveneTest(Total.Volume~region, data = new_dt)
+```
+
+p value = 0.00000000000000022 and p << 0.05 so there is not a homogeneity of variance.
+
+We can illustrate this difference with boxplot.
+
+One-way ANOVA is not a valid test to determine any significant difference between group means. Conclusion of ANOVA is not certain. 
+
+Because there are not homogeneity of variance and normality.
+##### 7.2. State the hypotheses and identify the claim.
+H0: There is not a difference between the mean of total amount of avocado sold: in the following regions: Atlanta, Boston and Detroit. 
+
+H1: At least two of the means are not equal.
+
+
+##### 7.3. Compute the test statistic.
+```{r}
+anova_one_way <- aov(Total.Volume~region, data = new_dt)
+summary(anova_one_way)
+```
+##### 7.4. Make the decision and interpret the result.
+
+p_value = 0.000000457 and p << 0.05. Region is a significantly important factor for sell.
+
+Reject null hypothesis in favor of alternative hypothesis.
+
+At least two of the means are not equal.
+
+##### 7.5. If the ANOVA is significant, conduct the Post-hoc tests.
+```{r}
+TukeyHSD(anova_one_way)
+```
+
+For Boston-Atlanta, p_value is 0.3724433 and more than 0.05 so there is not a regional sales difference between Bostan and Atlanta.
+
+But for Detroit-Boston and Detroit-Atlanta which p_values is smaller than 0.05,regional sales differences are important. 
+
+p_value=0.0003052 and p < 0.05 for Detroit-Atlanta.
+
+p_value=0.0000006 and p < 0.05 for Detroit-Boston.
+
+##### 7.6. Plot the boxplot and interpret it.
+```{r, fig.width=8, fig.height=6}
+boxplot(Total.Volume~region,data = new_dt, main = "Boxplot for Total Number of Avocados sold in Atlanta, Boston and Detroit", xlab = "Number of Avocados",ylab = "Region", col= "blue", horizontal = T)
+```
+
+Boxplot is always a good idea  for understanding which groups have the significantly different variance.
+
+Atlanta and Boston have a larger variance than Detroit's variance.
+
+Atlanta and Boston have close variances.
