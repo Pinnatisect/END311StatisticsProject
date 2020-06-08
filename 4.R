@@ -9,7 +9,6 @@ atlanta <- avocado_data[avocado_data[,"region"] == "Atlanta",]
 atlanta_total <- atlanta[,"Total.Volume"]
 
 confidence = 0.95
-z_value <- qnorm(confidence)
 
 n_one <- length(boston_total)
 n_two <- length(atlanta_total)
@@ -22,7 +21,7 @@ var_two <- var(atlanta_total)
 
 v <- ((var_one / n_one + var_two / n_two)^2) / (((var_one / n_one)^2) / (n_one - 1) + ((var_two / n_two)^2) / (n_two - 1))
 
-t <- - qt((1 - confidence) / 2 , df=v)
+t <- (-qt((1 - confidence) / 2 , df=v))
 
 std_err <- sqrt((var_one / n_one) + (var_two / n_two))
 
