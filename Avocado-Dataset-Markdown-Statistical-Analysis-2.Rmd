@@ -396,8 +396,8 @@ p_value=0.0000006 and p < 0.05 for Detroit-Boston.
 
 We use boxplot:  
 ```{r, fig.width=8, fig.height=6, tidy=TRUE, tidy.opts=list(width.cutoff=60)}
-boxplot(Total.Volume~region,data = new_dt, xlab = "Number of Avocados", ylab = "Region", col= "blue", horizontal = T, 
-        main = "Total Number of Avocados sold in Atlanta, Boston and Detroit")
+boxplot(Total.Volume~region,data = new_dt, xlab = "Number of Avocados", ylab = "Region", col= "blue", horizontal = T)
+title(main = c("Total Number of Avocados sold in Atlanta, Boston and Detroit"))
 ```
 
 Boxplot is always a good idea  for understanding which groups have the significantly different variance.  
