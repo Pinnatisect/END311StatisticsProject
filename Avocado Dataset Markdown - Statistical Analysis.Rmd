@@ -1,11 +1,14 @@
 ---
-title: "Avocado Dataset Markdown - Statistical Analysis"
+title: "Avocado-Dataset-Markdown-Statistical Analysis"
 output:
-  word_document: default
   pdf_document: default
   html_document: default
+  word_document: default
 date: "06 06 2020"
 ---
+```{r, include=FALSE}
+options(tinytex.verbose = TRUE)
+```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
