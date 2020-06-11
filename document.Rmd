@@ -1,14 +1,15 @@
 ---
-title: "Avocado-Dataset-Markdown-Statistical Analysis"
-output:
-  pdf_document:
-    keep_tex: true
-  html_document: default
-  word_document: default
+title: "Avocado Dataset Statistical Analysis"
+output: pdf_document
 date: "06 06 2020"
 ---
+
 ```{r, include=FALSE}
 options(tinytex.verbose = TRUE)
+```
+
+```{r}
+1:15
 ```
         
 ```{r setup, include=FALSE}
@@ -311,97 +312,3 @@ Again, using t-value for our hypothesis: 16.59131.
 It simply tells us that the coefficient cannot be equal to zero. 
 
 Checking our summary model, we can see that P-value is extremely small and falls into critical region ( <alpha = 0.05) We can reject H0.
-
-#### 7.	Analysis of Variance (Is there a difference between the mean of total amount of avocado sold: in the following regions: Atlanta, Boston and Detroit.  
-We use "car" library for Levene Test.
-```{r echo= F}
-library(car) 
-
-new_dt<- subset(avocado_data, region =="Atlanta" | region =="Boston" | region == "Detroit")
-```
-##### 7.1. Perform the diagnostic tests for the assumptions on ANOVA and test the following assumptions:
-
-##### (i) Normality of residuals,  
-
-Let us plot the histogram:
-
-``` {r fig.width = 8, fig.height = 7, tidy=TRUE, tidy.opts=list(width.cutoff=60)}
-hist(new_dt$Total.Volume, xlab = "Total Sold", labels = T, col = "blue", main = paste("Total Number of Observations for Avocados sold in Atlanta Boston and Detroit"))
-```
-
-
-Let's do one-way ANOVA test:
-```{r, tidy=TRUE, tidy.opts=list(width.cutoff=60)}
-anova_one_way <- aov(Total.Volume ~ region, data = new_dt)
-qqnorm(anova_one_way$residuals)
-qqline(anova_one_way$residuals)
-```
-
-Observations are incompatible with theoretical values so there is not a normality. 
-
-##### (ii) The errors have a mean of 0, 
-
-##### (iii)The errors are independent,  
-Independency can only be achieved if you have set your experiment up correctly.
-
-There is no way to test the independency;
-
-##### (iv) The errors have equal variance among each treatment levels.  
-```{r}
-leveneTest(Total.Volume~region, data = new_dt)
-```
-
-p value = 0.00000000000000022 and p << 0.05 so there is not a homogeneity of variance.
-
-We can illustrate this difference with boxplot.
-
-One-way ANOVA is not a valid test to determine any significant difference between group means. Conclusion of ANOVA is not certain. 
-
-Because there are not homogeneity of variance and normality.
-
-##### 7.2. State the hypotheses and identify the claim.
-
-H0: There is not a difference between the mean of total amount of avocado sold: in the following regions: Atlanta, Boston and Detroit. 
-
-H1: At least two of the means are not equal.
-
-
-##### 7.3. Compute the test statistic.
-```{r}
-anova_one_way <- aov(Total.Volume~region, data = new_dt)
-summary(anova_one_way)
-```
-##### 7.4. Make the decision and interpret the result.  
-p_value = 0.000000457 and p << 0.05. Region is a significantly important factor for sell.
-
-Reject null hypothesis in favor of alternative hypothesis.
-
-At least two of the means are not equal.
-
-##### 7.5. If the ANOVA is significant, conduct the Post-hoc tests.
-```{r}
-TukeyHSD(anova_one_way)
-```
-
-
-For Boston-Atlanta, p_value is 0.3724433 and more than 0.05 so there is not a regional sales difference between Bostan and Atlanta.  
-
-But for Detroit-Boston and Detroit-Atlanta which p_values is smaller than 0.05,regional sales differences are important.  
-
-p_value=0.0003052 and p < 0.05 for Detroit-Atlanta.  
-
-p_value=0.0000006 and p < 0.05 for Detroit-Boston.  
-
-##### 7.6. Plot the boxplot and interpret it.  
-
-We use boxplot:  
-```{r, fig.width=8, fig.height=6, tidy=TRUE, tidy.opts=list(width.cutoff=60)}
-boxplot(Total.Volume~region,data = new_dt, xlab = "Number of Avocados", ylab = "Region", col= "blue", horizontal = T)
-title(main = c("Total Number of Avocados sold in Atlanta, Boston and Detroit"))
-```
-
-Boxplot is always a good idea  for understanding which groups have the significantly different variance.  
-
-Atlanta and Boston have a larger variance than Detroit's variance.  
-
-Atlanta and Boston have close variances.
