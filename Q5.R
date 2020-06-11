@@ -18,8 +18,13 @@ boston <- avo[avo$region == "Boston", ]$Total.Volume
 t.test(atlanta, boston, paired = F, alternative = "two.sided", var.equal = T, conf.level = 0.95)
 t_value <- (mean(atlanta)-mean(boston))/sqrt(var(atlanta)/338 + var(boston)/338)
 print(t_value)
+2*pt(t_value,df=674) #p-val
+2*pnorm(t_value) #p-val-normal
 
+# We should also check our critical region.
+t_critical <- qt(0.025, df= 674)
+# critical t is equal to -1.963
 # 3. Interpret the results.
-# t_value = -1.217 with df = 674 and p = 0.224. p > 0.025 (two-tailed test, conf. level = 0.95 then alpha = 0.05)
-# reject null hypothesis in favor of alternative hypothesis.
-# there is a significant difference between means for Boston and Atlanta regions.
+# t_value = -1.217 > critical t value = -1.963 with df = 674 and p = 0.224. p > 0.025 (two-tailed test, conf. level = 0.95 then alpha = 0.05) 
+# We fail to reject null hypothesis.
+# 
