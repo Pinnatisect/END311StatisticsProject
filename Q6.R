@@ -21,6 +21,18 @@ library(ggplot2)
 ggplot(at, aes(X4046, Total.Bags)) + ggtitle("Type 4046 vs. Total Bags") + xlab("Avocado Type 4046")+ ylab ("Total Bags") + 
   geom_point() + geom_smooth(method = lm, se= FALSE) +   theme(plot.title = element_text(hjust = 0.5))
 
+# 2. Graph the line on a scatter diagram. (Alternative)
+# We can use plot function instead of ggplot2 library.
+plot(at$X4046, at$Total.Bags, main = "Type 4046 vs. Total Bags",
+     xlab = "Avocado Type with PLU 4046", ylab = "Total Bags", pch = 16) 
+abline(model, col = "blue")
+
+#Residuals vs Fitted
+#Normal Q-Q: Normality
+#Scale Location: Homoscedasticity
+#Residuals vs Leverage
+plot(model)
+
 # 3. Interpret R-squared value
 summary(model)
 
