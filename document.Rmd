@@ -7,8 +7,13 @@ date: "06/06/2020"
 ```{r, include=FALSE}
 options(tinytex.verbose = TRUE)
 options(scipen = 999) # Disabled scientific notation for a smooth graph.
+options(width = 80)
 ```
 
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+# Set so that long lines in R will be wrapped:
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80), tidy=TRUE)
+```
 
 #### 1.	Describe the Data Set statistically. What are the variables? Define the type of each variable (Nominal, ordinal, or interval). Descriptive Statistics for the total number of avocado sold in Atlanta region (Variance, Standard deviation, Range, Percentiles, Quartiles, Measure of Skew. Scatterplot, Box Plot).  
 ```{r}
@@ -20,7 +25,7 @@ printf <- function(...) {
 ```
 
 Defining a generalized function to calculate fractiles
-```{r}
+```{r, tidy=FALSE}
 fractile <- function(data_set, n) {
 	name <- "Fractile"
 	if (n ==   3) name <- "Tertile"
@@ -63,7 +68,9 @@ atlanta_total <- atlanta[,"Total.Volume"]
 
 We now want to define the data set and the type of each variable:
 ```{r, echo=FALSE}
-printf("The data set describes avacodo sales with prices and the amount of units in certain regions of America")
+printf("The data set describes avacodo sales
+       with prices and the amount of units
+       in certain regions of America")
 printf("Accessed from : https://www.kaggle.com/neuromusic/avocado-prices")
 printf("Variables :")
 printf("Date         - Interval - The date the entry was recorded at")
@@ -88,8 +95,8 @@ basic_descriptive(atlanta_total)
 
 We can plot scatter and boxplot for total number of avocado sold in Atlanta region:
 ```{r}
-plot(atlanta_total, atlanta[,"AveragePrice"], main = "Total Number of Avocados Sold in Atlanta", xlab= "Total Number of Avocados Sold", ylab = "Average Price", pch=16)
-boxplot(atlanta_total, main = "Total Number of Avocados Sold in Atlanta", xlab= "Total Number of Avocados Sold", horizontal = T, ylab = "Avocado", col = "blue")
+plot(atlanta_total, atlanta[,"AveragePrice"], main = "Total Volume in Atlanta", xlab= "Total Volume", ylab = "Average Price", pch=16)
+boxplot(atlanta_total, main = "Total Volume in Atlanta", xlab= "Total Volume", horizontal = T, ylab = "Avocado", col = "blue")
 ```
 
 

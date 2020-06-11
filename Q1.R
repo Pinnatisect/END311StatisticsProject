@@ -39,7 +39,9 @@ avocado_data <- read.csv("avocado.csv")
 atlanta <- avocado_data[avocado_data[,"region"] == "Atlanta",]
 atlanta_total <- atlanta[,"Total.Volume"]
 
-printf("The data set describes avacodo sales with prices and the amount of units in certain regions of America")
+printf("The data set describes avacodo sales
+       with prices and the amount of units
+       in certain regions of America")
 printf("Accessed from : https://www.kaggle.com/neuromusic/avocado-prices")
 printf("Variables :")
 printf("Date         - Interval - The date the entry was recorded at")
@@ -57,5 +59,5 @@ printf("year         - Interval - The year the entry was recorded at")
 printf("region       - Nominal  - The region where the data entry was located at")
 
 basic_descriptive(atlanta_total)
-plot(atlanta_total, atlanta[,"AveragePrice"], main = "Total Number of Avocados Sold in Atlanta", xlab= "Total Number of Avocados Sold", ylab = "Average Price", pch=16)
-boxplot(atlanta_total, main = "Total Number of Avocados Sold in Atlanta", xlab= "Total Number of Avocados Sold", horizontal = T, ylab = "Avocado", col = "blue")
+plot(atlanta_total, atlanta[,"AveragePrice"], main = "Total Volume in Atlanta", xlab= "Total Volume", ylab = "Average Price", pch=16)
+boxplot(atlanta_total, main = "Total Volume in Atlanta", xlab= "Total Volume", horizontal = T, ylab = "Avocado", col = "blue")
