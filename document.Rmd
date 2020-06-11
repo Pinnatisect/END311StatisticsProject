@@ -93,13 +93,14 @@ Now we can call our function to calculate the measures we want:
 basic_descriptive(atlanta_total)
 ```
 
-We can plot scatter and boxplot for total number of avocado sold in Atlanta region:
-```{r}
+\newpage
+We can plot scatter and boxplot for total number of avocado sold in Atlanta region:  
+```{r, echo=FALSE, fig.height=4}
 plot(atlanta_total, atlanta[,"AveragePrice"], main = "Total Volume in Atlanta", xlab= "Total Volume", ylab = "Average Price", pch=16)
 boxplot(atlanta_total, main = "Total Volume in Atlanta", xlab= "Total Volume", horizontal = T, ylab = "Avocado", col = "blue")
 ```
 
-
+\newpage
 #### 2. Hypothesis testing for mean (Hint: You need determine test value for the total amount of avocado sold in Atlanta region.)
 
 #### 2.1. State the hypothesis.  
@@ -138,6 +139,7 @@ Reject null hypothesis in favor of alternative hypothesis.
 Mean of total amount of avocado sold in Atlanta region is greater than 200000.  
 
 
+\newpage
 #### 3. Hypothesis testing for standard deviation (Hint: You need determine test value for the total amount of avocado sold in Atlanta region).
 
 ``` {r}
@@ -154,35 +156,37 @@ We define a test value:
 test_sigma <- 200000
 ```
 
-#### 3.2.Compute the test statistic.  
+#### 3.2. Compute the test statistic.  
 
 We can apply sigma test from Teaching Demos library:
 ```{r}
 sigma.test(atlanta_total, sigma = test_sigma, sigmasq = test_sigma^2, alternative = "greater", conf.level = 0.95)
 ```
-We also define a Chi-squared value:
-```{r, tidy=TRUE, tidy.opts=list(width.cutoff=60)}
-chisquare_value <- (nrow(atlanta) - 1) * (var(atlanta_total)) / ((test_sigma)^2)
-```
 
-```{r echo =FALSE}
+We also define a Chi-squared value:
+```{r}
+chisquare_value <- (nrow(atlanta) - 1) * (var(atlanta_total)) / ((test_sigma)^2)
 print(chisquare_value)
 ```
+
 #### 3.3. Interpret the results.  
 
-chisquare_value =583.22  with df = 337 and p-value = 0.000000000000001887 (conf. level = 0.95 then alpha = 0.05)  
+chisquare\_value = 583.22  with df = 337 and p-value = 0.000000000000001887 (conf. level = 0.95 then alpha = 0.05)  
 Reject null hypothesis in favor of alternative hypothesis.  
 Standard deviation of total amount of avocado sold in Atlanta region is greater than 200000 (it is 263107.1)  
 
 
+\newpage
 #### 4. Two sample confidence intervals for the means of total amount of avocado sold in Boston region and Atlanta region. 
-
 
 ```{r}
 printf <- function(...) {
 	cat(sprintf(...), "\n")
 }
+```
 
+Gather the needed data
+```{r}
 avocado_data <- read.csv("avocado.csv")
 
 boston <- avocado_data[avocado_data[,"region"] == "Boston",]
@@ -190,9 +194,15 @@ boston_total <- boston[,"Total.Volume"]
 
 atlanta <- avocado_data[avocado_data[,"region"] == "Atlanta",]
 atlanta_total <- atlanta[,"Total.Volume"]
+```
 
+Define the confidence level
+```{r}
 confidence = 0.95
+```
 
+Find the sample size, mean and variances for the two samples
+```{r}
 n_one <- length(boston_total)
 n_two <- length(atlanta_total)
 
@@ -201,126 +211,90 @@ mean_two <- mean(atlanta_total)
 
 var_one <- var(boston_total)
 var_two <- var(atlanta_total)
+```
 
+Calculate the degrees of freedom and the t-value
+```{r}
 v <- ((var_one / n_one + var_two / n_two)^2) / (((var_one / n_one)^2) / (n_one - 1) + ((var_two / n_two)^2) / (n_two - 1))
 
 t <- (-qt((1 - confidence)/2, df=v))
+```
 
+Calculate the margin of error from the t-value and the estimate from the means
+```{r}
 std_err <- sqrt((var_one / n_one) + (var_two / n_two))
 
 estimate <- mean_one - mean_two
+```
 
+We can now display our calculations and calculate the confidence interval
+```{r}
 printf("mean_one=%s", mean_one)
 printf("mean_two=%s", mean_two)
 printf("estimate=%s", estimate)
 printf("t=%s", t)
 printf("v=%s", v)
 printf("Confidence interval:")
-printf(sprintf("%s - %s * %s < mu_one - mu_two < %s + %s * %s", estimate, t, std_err, estimate, t, std_err))
-printf(sprintf("%s - %s < mu_one - mu_two < %s + %s", estimate, t * std_err, estimate, t * std_err))
+printf(sprintf("%.2f - %.2f * %.2f < mu_one - mu_two < %.2f + %.2f * %.2f", estimate, t, std_err, estimate, t, std_err))
+printf(sprintf("%.4f - %.4f < mu_one - mu_two < %.4f + %.4f", estimate, t * std_err, estimate, t * std_err))
 printf(sprintf("%s < mu_one - mu_two < %s", estimate - t * std_err, estimate + t * std_err))
 ```
 
-```{r}
-boston <- avocado_data[avocado_data[,"region"] == "Boston",]
-boston_total <- boston[,"Total.Volume"]
-```
 
-Let us obtain the variances and means for Atlanta and Boston regions.
-```{r}
-n_one <- length(boston_total)
-n_two <- length(atlanta_total)
-
-mean_one <- mean(boston_total)
-mean_two <- mean(atlanta_total)
-
-var_one <- var(boston_total)
-var_two <- var(atlanta_total)
-```
-
-```{r}
-sprintf("Mean for Boston region: %s", mean_one)
-sprintf("Mean for Atlanta region: %s", mean_two)
-sprintf("Variance for Boston region: %s", var_one)
-sprintf("Variance for Boston region: %s", var_two)
-```
-
-We define v, t-statistic, standard error and estimate variables to calculate confidence interval.
-```{r}
-v <- ((var_one / n_one + var_two / n_two)^2) / (((var_one / n_one)^2) / (n_one - 1) + ((var_two / n_two)^2) / (n_two - 1))
-
-t <- - qt((1 - 0.95) / 2 , df=v)
-
-std_err <- sqrt((var_one / n_one) + (var_two / n_two))
-
-estimate <- mean_one - mean_two
-```
-
-Now we can calculate confidence interval:
-``` {r echo = F, tidy=TRUE, tidy.opts=list(width.cutoff=60)} 
-print("Confidence interval:")
-print(sprintf("%s - %s * %s < mu_boston - mu_atlanta < %s + %s * %s", estimate, t, std_err, estimate, t, std_err))
-print(sprintf("%s - %s < mu_boston - mu_atlanta < %s + %s", estimate, t * std_err, estimate, t * std_err))
-```
-
-
+\newpage
 #### 5. Two sample hypothesis testing for means of total amount of avocado sold in Boston region and Atlanta region.  
 
 We will apply t-test. Assume that each groups are approximately normally distributed with equal variances.
 
 ##### 5.1. State the hypothesis.  
  
- H0: There is NO significant difference between total sales (in volume) for Boston and Atlanta regions.
- 
- H1: There is a significant difference between total sales (in volume) for Boston and Atlanta regions.
- 
- Notice that this test is two-tailed.
+H0: There is NO significant difference between total sales (in volume) for Boston and Atlanta regions.  
+H1: There is a significant difference between total sales (in volume) for Boston and Atlanta regions.  
+Notice that this test is two-tailed.  
  
 ##### 5.2. Compute the test statistic.
-``` {r, tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+
+```{r}
 t.test(atlanta_total, boston_total, paired = F, alternative = "two.sided", var.equal = T, conf.level = 0.95)
 t_value_for_two_sample <- (mean_two - mean_one) / sqrt(var_two / nrow(atlanta) + var_one / nrow(boston))
 ```
+
 Our t-value is:
-``` {r echo = F}
+```{r}
 print(t_value_for_two_sample)
 ```
 We could also obtain this value from t.test function output.  
 
 ##### 5.3. Interpret the results.  
 
-t_value = -1.217 with df = 674 and p = 0.224. p > 0.025 (two-tailed test, conf. level = 0.95, then alpha = 0.05)
+t\_value = -1.217 with df = 674 and p = 0.224. p > 0.025 (two-tailed test, conf. level = 0.95, then alpha = 0.05)  
+Reject null hypothesis in favor of alternative hypothesis.  
+There is a significant difference between means for Boston and Atlanta regions.  
 
-Reject null hypothesis in favor of alternative hypothesis.
 
-There is a significant difference between means for Boston and Atlanta regions.
-
+\newpage
 #### 6. Regression Analysis: ‘4046’ and ‘Total bags’ in Boston region.  
 
 ##### 6.1. Obtain the equation of the regression line.  
+
 ``` {r}
 model <- lm(Total.Bags ~ X4046, data = atlanta )
-```
-
-``` {r echo = F}
 print(model)
 ```
 
 Our formula should be stated as:  
-
-#### Total Bags = 20554.7389 + 0.4376  (Avocados with PLU sticker 4046)
+Total Bags = 20554.7389 + 0.4376 * (Avocados with PLU sticker 4046)  
 
 ##### 6.2. Graph the line on a scatter diagram.  
 
 Let us first call ggplot2 library for a better visiualization.
-``` {r}
+```{r}
 library(ggplot2)
 ```
 
 Now we can plot the data using the following code:
-```{r, tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+```{r, fig.height=4}
 ggplot(atlanta, aes(X4046, Total.Bags)) + labs(title = "Type 4046 vs. Total Bags", x= "Avocado Type 4046", y= "Total Bags") + theme(plot.title = element_text(hjust = 0.5)) + geom_point() + stat_smooth(method = lm)
-
 ```
 
 ##### 6.3. Interpret R-squared value  
@@ -329,46 +303,36 @@ We call the summary function:
 ``` {r}
 summary(model)
 ``` 
- R-squared value is used to interpret how well our model fits the data.  
- 
- R-squared takes a value between 0 and 1. Here the summary gives us two different values for R-squared: multiple and adjusted.  
 
- Multiple R-squared:  0.4503, Adjusted R-squared:  0.4487   
+R-squared value is used to interpret how well our model fits the data.  
+R-squared takes a value between 0 and 1. Here the summary gives us two different values for R-squared: multiple and adjusted.  
+Multiple R-squared:  0.4503, Adjusted R-squared:  0.4487   
+We are interested in adjusted R-squared value. Multiple R-squared includes a penalty for multiple linear regression models.  
+0.4487 value means that our model is not able to explain the variability (only partially). A value closer to 1 would be preferred.  
+We can observe that from Residual standard error value as well: 74,800. RSE value is relatively high, which means that the linear model fits our data poorly. The values deviate from our regression line by 74,800 units.  
 
- We are interested in adjusted R-squared value. Multiple R-squared includes a penalty for multiple linear regression models.  
- 
- 0.4487 value means that our model is not able to explain the variability (only partially). A value closer to 1 would be preferred.  
-
- We can observe that from Residual standard error value as well: 74,800. RSE value is relatively high, which means that the linear model fits our data poorly. The values deviate from our regression line by 74,800 units.  
-
- Also the percentage error for RSE is calculated by:  
+Also the percentage error for RSE is calculated by:  
 ``` {r}
  sigma(model) * 100 / mean(atlanta$Total.Bags)
 ```
 
 ##### 6.4. Hypothesis testing for the slope and intercept.  
 
-H0: The coefficient is equal to zero (no correlation between Total Bags and Avocado type 4046.)
+H~0~: The coefficient is equal to zero (no correlation between Total Bags and Avocado type 4046.)  
+H~1~: The coefficient is NOT equal to zero. (There is a correlation between Total Bags and Avocado type 4046.)  
 
-H1: The coefficient is NOT equal to zero. (There is a correlation between Total Bags and Avocado type 4046.)
-
-Let us define variables to obtain our regression t-value.
-
-``` {r, tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+Let us define variables to obtain our regression t-value.  
+```{r}
 regression <- summary(model) 
 coefficients <- regression$coefficients
 beta_estimate <-coefficients["X4046", "Estimate"]
 stderror <- coefficients["X4046", "Std. Error"]
 regression_t <- beta_estimate / stderror
 regression_p <- 2*pt(-abs(regression_t), df=nrow(atlanta)-ncol(atlanta))
-```
-
-```{r echo= F}
 print(regression_t)
 ```
 
 Again, using t-value for our hypothesis: 16.59131.  
-
-It simply tells us that the coefficient cannot be equal to zero. 
-
-Checking our summary model, we can see that P-value is extremely small and falls into critical region ( <alpha = 0.05) We can reject H0.
+It simply tells us that the coefficient cannot be equal to zero.  
+Checking our summary model, we can see that P-value is extremely small and falls into critical region  
+(< alpha = 0.05) We can reject H0.
