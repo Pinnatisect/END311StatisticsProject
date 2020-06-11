@@ -1,33 +1,26 @@
 ---
 title: "Avocado Dataset Statistical Analysis"
 output: pdf_document
-date: "06 06 2020"
+date: "06/06/2020"
 ---
 
 ```{r, include=FALSE}
 options(tinytex.verbose = TRUE)
+options(scipen = 999) # Disabled scientific notation for a smooth graph.
 ```
 
-```{r}
-1:15
-```
-        
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 #### 1.	Describe the Data Set statistically. What are the variables? Define the type of each variable (Nominal, ordinal, or interval). Descriptive Statistics for the total number of avocado sold in Atlanta region (Variance, Standard deviation, Range, Percentiles, Quartiles, Measure of Skew. Scatterplot, Box Plot).  
-
-We define a function to calculate percentiles first.
-```{r echo = FALSE}
-library(moments)
-options(scipen = 999) ## Disabled scientific notation for a smooth graph.
-```
-
 ```{r}
-printf <- function(...) {print(sprintf(...))}
+library(moments)
+
+printf <- function(...) {
+	cat(sprintf(...), "\n")
+}
 ```
 
-``` {r}
+Defining a generalized function to calculate fractiles
+```{r}
 fractile <- function(data_set, n) {
 	name <- "Fractile"
 	if (n ==   3) name <- "Tertile"
@@ -44,12 +37,11 @@ fractile <- function(data_set, n) {
 	for (i in 2:n-1) {
 		printf("%s %s = %s", name, i, quantile(data_set, i * (1/n)))
 	}
-	
 }
 ```
 
-We define another function to calculate variance, standard deviation, range and skewness measures.
-``` {r}
+We define another function to calculate the variance, standard deviation, range and skewness measures.
+```{r}
 basic_descriptive <- function(data_set) {
 	printf("Variance = %s", var(data_set))
 	printf("Standard Deviation = %s", sd(data_set))
@@ -60,49 +52,53 @@ basic_descriptive <- function(data_set) {
 	printf("Skewness = %s", skewness(data_set))
 }
 ```
+
 Now we should read our data and retrieve information about Atlanta region.
-``` {r echo = FALSE}
+```{r}
 avocado_data <- read.csv("avocado.csv")
 
 atlanta <- avocado_data[avocado_data[,"region"] == "Atlanta",]
 atlanta_total <- atlanta[,"Total.Volume"]
 ```
-We want to define the type of each variable in our data set:
-``` {r echo= FALSE}
+
+We now want to define the data set and the type of each variable:
+```{r, echo=FALSE}
+printf("The data set describes avacodo sales with prices and the amount of units in certain regions of America")
+printf("Accessed from : https://www.kaggle.com/neuromusic/avocado-prices")
 printf("Variables :")
-printf("Date         - Interval")
-printf("AveragePrice - Interval")
-printf("Total Volume - Interval")
-printf("4046         - Interval")
-printf("4225         - Interval")
-printf("4770         - Interval")
-printf("Total Bags   - Interval")
-printf("Small Bags   - Interval")
-printf("Large Bags   - Interval")
-printf("XLarge Bags  - Interval")
-printf("type         - Nominal")
-printf("year         - Interval")
-printf("region       - Nominal")
+printf("Date         - Interval - The date the entry was recorded at")
+printf("AveragePrice - Interval - The average price of an avacado in the entry")
+printf("Total Volume - Interval - The total count of avocado sold in the entry")
+printf("4046         - Interval - The count of avocados sold with code 4046 in the entry")
+printf("4225         - Interval - The count of avocados sold with code 4225 in the entry")
+printf("4770         - Interval - The count of avocados sold with code 4770 in the entry")
+printf("Total Bags   - Interval - The total bags of avocado sold in the entry")
+printf("Small Bags   - Interval - The count of small bags sold in the entry")
+printf("Large Bags   - Interval - The count of large bags sold in the entry")
+printf("XLarge Bags  - Interval - The count of extra large bags sold in the entry")
+printf("type         - Nominal  - Whether the sold avocados are organic or conventional")
+printf("year         - Interval - The year the entry was recorded at")
+printf("region       - Nominal  - The region where the data entry was located at")
 ```
+
 Now we can call our function to calculate the measures we want:
-``` {r echo = FALSE}
+```{r}
 basic_descriptive(atlanta_total)
 ```
 
 We can plot scatter and boxplot for total number of avocado sold in Atlanta region:
+```{r}
+plot(atlanta_total, atlanta[,"AveragePrice"], main = "Total Number of Avocados Sold in Atlanta", xlab= "Total Number of Avocados Sold", ylab = "Average Price", pch=16)
+boxplot(atlanta_total, main = "Total Number of Avocados Sold in Atlanta", xlab= "Total Number of Avocados Sold", horizontal = T, ylab = "Avocado", col = "blue")
+```
 
-``` {r, echo= FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=60)}
-plot(atlanta_total, atlanta[,"AveragePrice"], main = "Total Number of Avocados Sold in Atlanta", xlab= "Total sold", ylab = "Average Price", pch= 16)
-```
-```{r echo=FALSE}
-boxplot(atlanta_total, main = "Total Number of Avocados Sold in Atlanta", xlab= "Total sold", horizontal = T, ylab = "Avocado",col = "blue")
-```
+
+#### 2. Hypothesis testing for mean (Hint: You need determine test value for the total amount of avocado sold in Atlanta region.)
+#### 2.1. State the hypothesis.  
 
 ```{r echo= FALSE}
 library(data.table)
 ```
-#### 2. Hypothesis testing for mean (Hint: You need determine test value for the total amount of avocado sold in Atlanta region.)
-#### 2.1. State the hypothesis.  
 
 H0(Null hypothesis): mean of total amount of avocado sold (in volume) in Atlanta region is equal to 200,000 (test value)  
 H1(Alternative hypothesis): mean of total amount of avocado sold (in volume) in Atlanta region is greater than 200,000 (test value).
@@ -164,14 +160,60 @@ chisquare_value =583.22  with df = 337 and p-value = 0.000000000000001887 (conf.
 Reject null hypothesis in favor of alternative hypothesis.  
 Standard deviation of total amount of avocado sold in Atlanta region is greater than 200000 (it is 263107.1)  
 
+
 #### 4.	Two sample confidence intervals for the means of total amount of avocado sold in Boston region and Atlanta region. 
-```{r echo =FALSE}
+
+
+```{r}
+printf <- function(...) {
+	cat(sprintf(...), "\n")
+}
+
+avocado_data <- read.csv("avocado.csv")
+
+boston <- avocado_data[avocado_data[,"region"] == "Boston",]
+boston_total <- boston[,"Total.Volume"]
+
+atlanta <- avocado_data[avocado_data[,"region"] == "Atlanta",]
+atlanta_total <- atlanta[,"Total.Volume"]
+
+confidence = 0.95
+
+n_one <- length(boston_total)
+n_two <- length(atlanta_total)
+
+mean_one <- mean(boston_total)
+mean_two <- mean(atlanta_total)
+
+var_one <- var(boston_total)
+var_two <- var(atlanta_total)
+
+v <- ((var_one / n_one + var_two / n_two)^2) / (((var_one / n_one)^2) / (n_one - 1) + ((var_two / n_two)^2) / (n_two - 1))
+
+t <- (-qt((1 - confidence)/2, df=v))
+
+std_err <- sqrt((var_one / n_one) + (var_two / n_two))
+
+estimate <- mean_one - mean_two
+
+printf("mean_one=%s", mean_one)
+printf("mean_two=%s", mean_two)
+printf("estimate=%s", estimate)
+printf("t=%s", t)
+printf("v=%s", v)
+printf("Confidence interval:")
+printf(sprintf("%s - %s * %s < mu_one - mu_two < %s + %s * %s", estimate, t, std_err, estimate, t, std_err))
+printf(sprintf("%s - %s < mu_one - mu_two < %s + %s", estimate, t * std_err, estimate, t * std_err))
+printf(sprintf("%s < mu_one - mu_two < %s", estimate - t * std_err, estimate + t * std_err))
+```
+
+```{r}
 boston <- avocado_data[avocado_data[,"region"] == "Boston",]
 boston_total <- boston[,"Total.Volume"]
 ```
 
 Let us obtain the variances and means for Atlanta and Boston regions.
-``` {r echo = F}
+```{r}
 n_one <- length(boston_total)
 n_two <- length(atlanta_total)
 
@@ -182,14 +224,15 @@ var_one <- var(boston_total)
 var_two <- var(atlanta_total)
 ```
 
-``` {r echo= F}
+```{r}
 sprintf("Mean for Boston region: %s", mean_one)
 sprintf("Mean for Atlanta region: %s", mean_two)
 sprintf("Variance for Boston region: %s", var_one)
 sprintf("Variance for Boston region: %s", var_two)
 ```
+
 We define v, t-statistic, standard error and estimate variables to calculate confidence interval.
-``` {r, tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+```{r}
 v <- ((var_one / n_one + var_two / n_two)^2) / (((var_one / n_one)^2) / (n_one - 1) + ((var_two / n_two)^2) / (n_two - 1))
 
 t <- - qt((1 - 0.95) / 2 , df=v)
@@ -198,12 +241,15 @@ std_err <- sqrt((var_one / n_one) + (var_two / n_two))
 
 estimate <- mean_one - mean_two
 ```
+
 Now we can calculate confidence interval:
 ``` {r echo = F, tidy=TRUE, tidy.opts=list(width.cutoff=60)} 
 print("Confidence interval:")
 print(sprintf("%s - %s * %s < mu_boston - mu_atlanta < %s + %s * %s", estimate, t, std_err, estimate, t, std_err))
 print(sprintf("%s - %s < mu_boston - mu_atlanta < %s + %s", estimate, t * std_err, estimate, t * std_err))
 ```
+
+
 #### 5. Two sample hypothesis testing for means of total amount of avocado sold in Boston region and Atlanta region.  
 
 We will apply t-test. Assume that each groups are approximately normally distributed with equal variances.

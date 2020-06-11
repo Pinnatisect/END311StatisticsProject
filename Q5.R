@@ -27,4 +27,3 @@ t_critical <- qt(0.025, df= 674)
 # 3. Interpret the results.
 # t_value = -1.217 > critical t value = -1.963 with df = 674 and p = 0.224. p > 0.025 (two-tailed test, conf. level = 0.95 then alpha = 0.05) 
 # We fail to reject null hypothesis.
-# 

@@ -57,5 +57,5 @@ printf("year         - Interval - The year the entry was recorded at")
 printf("region       - Nominal  - The region where the data entry was located at")
 
 basic_descriptive(atlanta_total)
-plot(atlanta_total, atlanta[,"AveragePrice"])
-boxplot(atlanta_total)
+plot(atlanta_total, atlanta[,"AveragePrice"], main = "Total Number of Avocados Sold in Atlanta", xlab= "Total Number of Avocados Sold", ylab = "Average Price", pch=16)
+boxplot(atlanta_total, main = "Total Number of Avocados Sold in Atlanta", xlab= "Total Number of Avocados Sold", horizontal = T, ylab = "Avocado", col = "blue")
